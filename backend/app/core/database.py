@@ -77,20 +77,7 @@ def init_db():
         except Exception:
             pass
 
-        try:
-            from backend.app.models.entities import Cyclone
-            _db = SessionLocal()
-            try:
-                if _db.query(Cyclone).count() == 0:
-                    try:
-                        from scripts.seed_demo_data import seed
-                        seed()
-                    except Exception:
-                        pass
-            finally:
-                _db.close()
-        except Exception:
-            pass
+        pass
 
 def get_db():
     db = SessionLocal()

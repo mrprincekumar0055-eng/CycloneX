@@ -28,12 +28,6 @@ from data.adapters.open_meteo import open_meteo_adapter
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CycloneX")
 
-# Create database tables and ensure columns exist safely
-try:
-    init_db()
-except Exception as exc:
-    logger.warning(f"Database initialization deferred/failed: {exc}")
-
 def get_active_storm_coords() -> tuple[float, float]:
     """Retrieve active storm coordinates from database, or fallback to Biparjoy reference point."""
     try:
@@ -120,7 +114,7 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url="/docs",
     redoc_url="/redoc",
-    lifespan=lifespan
+    lifespan=None
 )
 
 # CORS middleware
@@ -132,15 +126,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Request processing time header
-@app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    response.headers["X-Process-Time-Seconds"] = str(round(process_time, 4))
-    return response
 
 # Production Health & Readiness Endpoints
 @app.get("/health")
