@@ -18,8 +18,8 @@ const CYAN = "\x1b[96m";
 const BOLD = "\x1b[1m";
 const RESET = "\x1b[0m";
 
-if (process.env.ALLOW_PORT_IN_USE === "true" || process.env.SKIP_PORT_CHECK === "true") {
-  console.log(`${YELLOW}[WARN] Port 3000 check skipped via environment override.${RESET}`);
+if (process.env.ALLOW_PORT_IN_USE === "true" || process.env.SKIP_PORT_CHECK === "true" || process.env.VERCEL || process.env.CI) {
+  console.log(`${GREEN}[INFO] Build environment detected (Vercel/CI/override). Port check skipped.${RESET}`);
   process.exit(0);
 }
 

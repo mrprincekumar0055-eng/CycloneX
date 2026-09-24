@@ -1,3 +1,14 @@
+import sys
+import os
+
+# Ensure project root and backend directory are in sys.path for seamless deployment imports
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_backend_dir = os.path.dirname(_current_dir)
+_project_root = os.path.dirname(_backend_dir)
+for _p in [_project_root, _backend_dir]:
+    if _p and _p not in sys.path:
+        sys.path.insert(0, _p)
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
