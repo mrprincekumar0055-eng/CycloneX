@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: cyclonex-api
+    runtime: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ENVIRONMENT
+        value: production
+      - key: DEMO_MODE
+        value: "true"
+      - key: LIVE_ALERTS_ENABLED
+        value: "false"
+      - key: BACKEND_CORS_ORIGINS
+        value: "https://cyclone-x-hro.vercel.app,https://cyclone-x.vercel.app,http://localhost:3000,http://127.0.0.1:3000"

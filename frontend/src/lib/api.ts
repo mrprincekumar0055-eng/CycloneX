@@ -1,28 +1,39 @@
 export async function fetchFromAPI(endpoint: string, options: RequestInit = {}) {
   const candidateBases: string[] = [];
+  const isBrowser = typeof window !== "undefined";
+  const isLocalhost = isBrowser && (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "0.0.0.0"
+  );
 
+  // 1. Explicit public API URL configured via environment variable
   if (process.env.NEXT_PUBLIC_API_URL) {
-    candidateBases.push(process.env.NEXT_PUBLIC_API_URL);
+    const pubUrl = process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+    candidateBases.push(pubUrl.endsWith("/api/v1") ? pubUrl : `${pubUrl}/api/v1`);
   }
 
-  if (process.env.BACKEND_URL) {
-    const bUrl = process.env.BACKEND_URL.replace(/\/+$/, "");
-    candidateBases.push(bUrl.endsWith("/api/v1") ? bUrl : `${bUrl}/api/v1`);
-  }
-
-  // In browser, relative path proxies cleanly through Next.js / Vercel rewrites without CORS/host mismatch
-  if (typeof window !== "undefined") {
+  // 2. In browser: relative path proxies cleanly through Next.js / Vercel without CORS or mixed content
+  if (isBrowser) {
     candidateBases.push("/api/v1");
   }
 
-  // In Vercel server-side runtime, use deployment URL if available
-  if (process.env.VERCEL_URL) {
-    candidateBases.push(`https://${process.env.VERCEL_URL}/api/v1`);
+  // 3. In SSR / Node server-side runtime
+  if (!isBrowser) {
+    if (process.env.BACKEND_URL) {
+      const bUrl = process.env.BACKEND_URL.replace(/\/+$/, "");
+      candidateBases.push(bUrl.endsWith("/api/v1") ? bUrl : `${bUrl}/api/v1`);
+    }
+    if (process.env.VERCEL_URL) {
+      candidateBases.push(`https://${process.env.VERCEL_URL}/api/v1`);
+    }
   }
 
-  // Direct backend endpoints for local development fallback
-  candidateBases.push("http://127.0.0.1:8000/api/v1");
-  candidateBases.push("http://localhost:8000/api/v1");
+  // 4. Local development fallbacks ONLY for local development environments
+  if (isLocalhost || (!isBrowser && process.env.NODE_ENV !== "production")) {
+    candidateBases.push("http://127.0.0.1:8000/api/v1");
+    candidateBases.push("http://localhost:8000/api/v1");
+  }
 
   let lastError: any = null;
 
@@ -46,9 +57,9 @@ export async function fetchFromAPI(endpoint: string, options: RequestInit = {}) 
     }
   }
 
-  // Surface errors visibly in browser DevTools console
-  console.error(
-    `[CycloneX API Error] Failed to fetch endpoint "${endpoint}" across all candidate bases: [${candidateBases.join(", ")}]. Check backend server status on port 8000.`,
+  // Surface errors visibly in console
+  console.warn(
+    `[CycloneX API] Failed to fetch endpoint "${endpoint}" across candidate bases: [${candidateBases.join(", ")}].`,
     lastError
   );
   return null;

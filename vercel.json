@@ -1,44 +1,7 @@
 {
-  "services": {
-    "frontend": {
-      "root": "frontend/",
-      "framework": "nextjs"
-    },
-    "backend": {
-      "root": "backend/",
-      "entrypoint": "app/main.py"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": {
-        "service": "backend"
-      }
-    },
-    {
-      "source": "/docs",
-      "destination": {
-        "service": "backend"
-      }
-    },
-    {
-      "source": "/redoc",
-      "destination": {
-        "service": "backend"
-      }
-    },
-    {
-      "source": "/openapi.json",
-      "destination": {
-        "service": "backend"
-      }
-    },
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "frontend"
-      }
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "cd frontend && npm run build",
+  "installCommand": "cd frontend && npm install",
+  "outputDirectory": "frontend/.next"
 }

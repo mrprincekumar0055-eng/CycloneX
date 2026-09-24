@@ -16,6 +16,7 @@ from contextlib import asynccontextmanager
 import asyncio
 import time
 import logging
+from datetime import datetime, timezone
 
 from backend.app.core.config import settings
 from backend.app.core.database import Base, engine, SessionLocal, init_db
@@ -111,6 +112,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -125,6 +127,42 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time-Seconds"] = str(round(process_time, 4))
     return response
 
+# Production Health & Readiness Endpoints
+@app.get("/health")
+def health_check():
+    """Liveness probe: verifies the API process is alive and responsive."""
+    return {
+        "status": "ok",
+        "service": "cyclonex-api",
+        "version": settings.VERSION,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+@app.get("/health/ready")
+async def health_ready():
+    """Readiness probe: verifies database connectivity and background cache status."""
+    import sqlalchemy
+    db_ok = True
+    try:
+        db = SessionLocal()
+        db.execute(sqlalchemy.text("SELECT 1"))
+        db.close()
+    except Exception:
+        db_ok = False
+
+    cached_stations = len(weather_cache._grid_points) if hasattr(weather_cache, "_grid_points") else 0
+    cache_ready = cached_stations > 0
+
+    return {
+        "status": "ready" if db_ok else "degraded",
+        "service": "cyclonex-api",
+        "database": "connected" if db_ok else "unreachable",
+        "weather_cache_ready": cache_ready,
+        "cached_stations": cached_stations,
+        "live_alerts_enabled": settings.LIVE_ALERTS_ENABLED,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
 # Root endpoint
 @app.get("/")
 def root():
@@ -133,7 +171,9 @@ def root():
         "tagline": "AI-Powered Cyclone Intelligence & Early Warning",
         "version": settings.VERSION,
         "api_docs": "/docs",
-        "health_check": f"{settings.API_V1_STR}/system/health"
+        "health_check": "/health",
+        "readiness_check": "/health/ready",
+        "api_v1": settings.API_V1_STR
     }
 
 # Register API v1
@@ -141,4 +181,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.app.main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))
+    host = os.environ.get("HOST", "0.0.0.0")
+    is_dev = os.environ.get("ENVIRONMENT", "development").lower() == "development"
+    uvicorn.run("backend.app.main:app", host=host, port=port, reload=is_dev)

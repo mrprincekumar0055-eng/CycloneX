@@ -768,17 +768,26 @@ export default function DashboardPage() {
             <span className="font-semibold text-slate-900">
               WEATHER CONDITIONS: {liveWeather?.name || "India Grid Station"} ({liveWeather?.state || "India"})
             </span>
-            <span className={`text-[10px] px-1.5 py-0.5 rounded border font-bold uppercase tracking-wider ${
-              (liveWeather?.status || liveWeather?.data_status) === "LIVE"
-                ? "bg-emerald-50 text-emerald-700 border-emerald-300"
-                : (liveWeather?.status || liveWeather?.data_status) === "STALE"
-                ? "bg-amber-50 text-amber-700 border-amber-300"
-                : (liveWeather?.status || liveWeather?.data_status) === "OFFLINE"
-                ? "bg-rose-50 text-rose-700 border-rose-300"
-                : "bg-slate-100 text-slate-600 border-slate-200"
-            }`}>
-              {liveWeather?.status || liveWeather?.data_status || "LIVE"}
-            </span>
+            {(() => {
+              const currentStatus = weatherError || (!liveWeather && !liveWeatherLoading)
+                ? "OFFLINE"
+                : (!liveWeather && liveWeatherLoading)
+                ? "CONNECTING"
+                : (liveWeather?.status || liveWeather?.data_status || "OFFLINE");
+              return (
+                <span className={`text-[10px] px-1.5 py-0.5 rounded border font-bold uppercase tracking-wider ${
+                  currentStatus === "LIVE"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                    : currentStatus === "STALE"
+                    ? "bg-amber-50 text-amber-700 border-amber-300"
+                    : currentStatus === "CONNECTING"
+                    ? "bg-blue-50 text-blue-700 border-blue-300 animate-pulse"
+                    : "bg-rose-50 text-rose-700 border-rose-300"
+                }`}>
+                  {currentStatus}
+                </span>
+              );
+            })()}
             {liveWeather?.disturbance_score != null && (
               <span className="text-[10px] text-slate-500">
                 • Index: {liveWeather.disturbance_score}/100 [Rank #{liveWeather?.rank || 1} of 44]

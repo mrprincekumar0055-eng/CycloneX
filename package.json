@@ -1,0 +1,14 @@
+{
+  "name": "cyclonex",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start",
+    "dev": "npm --prefix frontend run dev",
+    "lint": "npm --prefix frontend run lint"
+  }
+}

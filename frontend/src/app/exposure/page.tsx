@@ -78,7 +78,7 @@ export default function ExposurePage() {
               <Waves className="w-6 h-6 text-amber-600 mx-auto" />
               <div className="font-bold text-slate-800 uppercase">Exposure Engine Offline</div>
               <p className="text-slate-500">
-                Could not connect to CycloneX FastAPI backend (http://127.0.0.1:8000). Start the backend service to calculate population impact zones.
+                Could not connect to CycloneX FastAPI backend. Connect the backend service to calculate population impact zones.
               </p>
             </>
           ) : (
