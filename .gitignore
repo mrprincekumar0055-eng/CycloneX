@@ -36,11 +36,11 @@ htmlcov/
 .nox/
 
 # Database & Local Artifacts
-cyclonex.db
+!cyclonex.db
+!backend/cyclonex.db
 *.sqlite
 *.sqlite3
 *.db
-!backend/cyclonex.db
 *.log
 
 # IDE & Editor
