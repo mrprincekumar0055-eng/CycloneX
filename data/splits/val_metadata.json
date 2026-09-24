@@ -1,0 +1,32 @@
+[
+  {
+    "image_id": "img-michaung-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "MICHAUNG",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  },
+  {
+    "image_id": "img-tauktae-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "TAUKTAE",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  }
+]

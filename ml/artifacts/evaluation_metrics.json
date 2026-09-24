@@ -1,0 +1,353 @@
+{
+  "scientific_validation_methodology": "Leave-One-Storm-Out (LOSO) Cross-Validation without temporal or storm-level data leakage",
+  "dataset_summary": {
+    "source": "NOAA NCEI IBTrACS v04r00 North Indian Ocean (NI) 6-Hourly Synoptic Best Track",
+    "num_storms": 11,
+    "storms_included": [
+      "AMPHAN",
+      "BIPARJOY",
+      "FANI",
+      "HUDHUD",
+      "MICHAUNG",
+      "MOCHA",
+      "NISARGA",
+      "PHAILIN",
+      "REMAL",
+      "TAUKTAE",
+      "YAAS"
+    ],
+    "num_observations": 258,
+    "temporal_resolution": "6-hourly synoptic (00Z, 06Z, 12Z, 18Z)"
+  },
+  "loso_folds": [
+    {
+      "fold": 1,
+      "test_storm": "AMPHAN",
+      "train_storms_count": 10,
+      "train_samples": 222,
+      "test_samples": 25
+    },
+    {
+      "fold": 2,
+      "test_storm": "BIPARJOY",
+      "train_storms_count": 10,
+      "train_samples": 206,
+      "test_samples": 41
+    },
+    {
+      "fold": 3,
+      "test_storm": "FANI",
+      "train_storms_count": 10,
+      "train_samples": 212,
+      "test_samples": 35
+    },
+    {
+      "fold": 4,
+      "test_storm": "HUDHUD",
+      "train_storms_count": 10,
+      "train_samples": 215,
+      "test_samples": 32
+    },
+    {
+      "fold": 5,
+      "test_storm": "MICHAUNG",
+      "train_storms_count": 10,
+      "train_samples": 239,
+      "test_samples": 8
+    },
+    {
+      "fold": 6,
+      "test_storm": "MOCHA",
+      "train_storms_count": 10,
+      "train_samples": 232,
+      "test_samples": 15
+    },
+    {
+      "fold": 7,
+      "test_storm": "NISARGA",
+      "train_storms_count": 10,
+      "train_samples": 233,
+      "test_samples": 14
+    },
+    {
+      "fold": 8,
+      "test_storm": "PHAILIN",
+      "train_storms_count": 10,
+      "train_samples": 220,
+      "test_samples": 27
+    },
+    {
+      "fold": 9,
+      "test_storm": "REMAL",
+      "train_storms_count": 10,
+      "train_samples": 240,
+      "test_samples": 7
+    },
+    {
+      "fold": 10,
+      "test_storm": "TAUKTAE",
+      "train_storms_count": 10,
+      "train_samples": 223,
+      "test_samples": 24
+    },
+    {
+      "fold": 11,
+      "test_storm": "YAAS",
+      "train_storms_count": 10,
+      "train_samples": 228,
+      "test_samples": 19
+    }
+  ],
+  "classification_validation": {
+    "prediction_target": "IMD Stage Category at T+6h (No Target Leakage)",
+    "model_type": "RandomForestClassifier (Storm-Grouped LOSO)",
+    "accuracy": 0.6721,
+    "weighted_f1": 0.6706,
+    "macro_f1": 0.6807,
+    "balanced_accuracy": 0.688,
+    "precision_weighted": 0.6858,
+    "recall_weighted": 0.6721,
+    "classes": [
+      "Cyclonic Storm",
+      "Depression",
+      "Extremely Severe Cyclonic Storm",
+      "Severe Cyclonic Storm",
+      "Super Cyclonic Storm",
+      "Very Severe Cyclonic Storm"
+    ],
+    "confusion_matrix": [
+      [
+        29,
+        2,
+        0,
+        10,
+        0,
+        0
+      ],
+      [
+        5,
+        38,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        28,
+        0,
+        7,
+        4
+      ],
+      [
+        5,
+        0,
+        2,
+        31,
+        0,
+        8
+      ],
+      [
+        0,
+        0,
+        5,
+        0,
+        18,
+        1
+      ],
+      [
+        1,
+        0,
+        20,
+        10,
+        0,
+        22
+      ]
+    ],
+    "class_distribution": {
+      "Very Severe Cyclonic Storm": 53,
+      "Severe Cyclonic Storm": 46,
+      "Depression": 44,
+      "Cyclonic Storm": 41,
+      "Extremely Severe Cyclonic Storm": 39,
+      "Super Cyclonic Storm": 24
+    },
+    "baseline_comparisons": {
+      "persistence_baseline": {
+        "description": "Category at time T assumed to persist at T+6h",
+        "accuracy": 0.7004,
+        "weighted_f1": 0.7003
+      },
+      "majority_class_baseline": {
+        "description": "Always predict majority class (Very Severe Cyclonic Storm)",
+        "accuracy": 0.2146
+      },
+      "random_guessing_baseline": {
+        "description": "Uniform random selection among 6 classes",
+        "accuracy": 0.1667
+      }
+    }
+  },
+  "intensity_validation": {
+    "methodology": "Storm-Grouped LOSO Regression evaluated against Persistence on identical sample subsets",
+    "horizons": {
+      "6h": {
+        "samples": 247,
+        "storms_count": 11,
+        "cyclonex_model": {
+          "mae_kts": 6.32,
+          "rmse_kts": 8.69,
+          "bias_kts": 0.4
+        },
+        "persistence_baseline": {
+          "mae_kts": 7.4,
+          "rmse_kts": 10.64,
+          "bias_kts": -0.21
+        },
+        "skill_improvement_pct": 14.6
+      },
+      "12h": {
+        "samples": 236,
+        "storms_count": 11,
+        "cyclonex_model": {
+          "mae_kts": 10.21,
+          "rmse_kts": 13.83,
+          "bias_kts": -0.48
+        },
+        "persistence_baseline": {
+          "mae_kts": 14.11,
+          "rmse_kts": 19.17,
+          "bias_kts": -0.78
+        },
+        "skill_improvement_pct": 27.7
+      },
+      "24h": {
+        "samples": 214,
+        "storms_count": 11,
+        "cyclonex_model": {
+          "mae_kts": 18.4,
+          "rmse_kts": 23.78,
+          "bias_kts": -1.8
+        },
+        "persistence_baseline": {
+          "mae_kts": 26.63,
+          "rmse_kts": 33.78,
+          "bias_kts": -2.7
+        },
+        "skill_improvement_pct": 30.9
+      },
+      "48h": {
+        "samples": 170,
+        "storms_count": 10,
+        "cyclonex_model": {
+          "mae_kts": 29.96,
+          "rmse_kts": 35.67,
+          "bias_kts": -2.15
+        },
+        "persistence_baseline": {
+          "mae_kts": 44.06,
+          "rmse_kts": 52.39,
+          "bias_kts": -10.44
+        },
+        "skill_improvement_pct": 32.0
+      },
+      "72h": {
+        "samples": 133,
+        "storms_count": 9,
+        "cyclonex_model": {
+          "mae_kts": 40.7,
+          "rmse_kts": 46.39,
+          "bias_kts": -3.38
+        },
+        "persistence_baseline": {
+          "mae_kts": 49.18,
+          "rmse_kts": 58.82,
+          "bias_kts": -19.68
+        },
+        "skill_improvement_pct": 17.2
+      }
+    }
+  },
+  "track_validation": {
+    "methodology": "Great-Circle Position Error (km) evaluated via Storm-Grouped LOSO against Persistence on identical sample subsets",
+    "horizons": {
+      "6h": {
+        "samples": 247,
+        "storms_count": 11,
+        "cyclonex_model": {
+          "mean_error_km": 41.3,
+          "median_error_km": 34.5,
+          "std_error_km": 30.6
+        },
+        "persistence_baseline": {
+          "mean_error_km": 37.3,
+          "median_error_km": 31.5,
+          "std_error_km": 28.2
+        },
+        "skill_improvement_pct": -10.7
+      },
+      "12h": {
+        "samples": 236,
+        "storms_count": 11,
+        "cyclonex_model": {
+          "mean_error_km": 75.2,
+          "median_error_km": 67.1,
+          "std_error_km": 47.3
+        },
+        "persistence_baseline": {
+          "mean_error_km": 71.0,
+          "median_error_km": 61.5,
+          "std_error_km": 43.6
+        },
+        "skill_improvement_pct": -5.8
+      },
+      "24h": {
+        "samples": 214,
+        "storms_count": 11,
+        "cyclonex_model": {
+          "mean_error_km": 141.9,
+          "median_error_km": 131.5,
+          "std_error_km": 76.9
+        },
+        "persistence_baseline": {
+          "mean_error_km": 141.2,
+          "median_error_km": 130.6,
+          "std_error_km": 75.4
+        },
+        "skill_improvement_pct": -0.5
+      },
+      "48h": {
+        "samples": 170,
+        "storms_count": 10,
+        "cyclonex_model": {
+          "mean_error_km": 284.6,
+          "median_error_km": 272.4,
+          "std_error_km": 158.8
+        },
+        "persistence_baseline": {
+          "mean_error_km": 302.1,
+          "median_error_km": 275.4,
+          "std_error_km": 168.8
+        },
+        "skill_improvement_pct": 5.8
+      },
+      "72h": {
+        "samples": 133,
+        "storms_count": 9,
+        "cyclonex_model": {
+          "mean_error_km": 388.8,
+          "median_error_km": 359.3,
+          "std_error_km": 251.2
+        },
+        "persistence_baseline": {
+          "mean_error_km": 473.5,
+          "median_error_km": 421.5,
+          "std_error_km": 284.7
+        },
+        "skill_improvement_pct": 17.9
+      }
+    }
+  },
+  "evaluation_timestamp": "2026-09-17T07:56:31.424623+00:00"
+}
