@@ -9,7 +9,15 @@ connect_args = {}
 
 if db_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
-    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+    # Guarantee writable /tmp SQLite on serverless / Linux / non-writable environments
+    is_serverless = bool(
+        os.environ.get("VERCEL")
+        or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+        or os.environ.get("VERCEL_ENV")
+        or os.name != "nt"
+        or not os.access(".", os.W_OK)
+    )
+    if is_serverless:
         import tempfile
         import shutil
         tmp_db = os.path.join(tempfile.gettempdir(), "cyclonex.db")
@@ -17,6 +25,9 @@ if db_url.startswith("sqlite"):
             os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "cyclonex.db"),
             os.path.join(os.getcwd(), "cyclonex.db"),
             os.path.join(os.getcwd(), "backend", "cyclonex.db"),
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "cyclonex.db"),
+            "/var/task/cyclonex.db",
+            "/var/task/backend/cyclonex.db"
         ]
         for cp in candidate_paths:
             if os.path.exists(cp) and not os.path.exists(tmp_db):

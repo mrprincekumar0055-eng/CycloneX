@@ -82,15 +82,24 @@ async def poll_open_meteo_loop():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Only spawn long-running persistent background workers if NOT running in an ephemeral serverless runtime (e.g. Vercel)
-    is_serverless = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+    # Background workers only spawn when explicitly enabled AND not running in serverless (e.g. Vercel / Lambda)
+    enable_pollers = os.environ.get("ENABLE_BACKGROUND_POLLERS", "").lower() in ("true", "1")
+    is_serverless = bool(
+        os.environ.get("VERCEL")
+        or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+        or os.environ.get("VERCEL_ENV")
+        or os.name != "nt"
+    )
     tasks = []
-    if not is_serverless:
-        logger.info("[Lifespan] Starting Open-Meteo live weather background poller...")
-        tasks.append(asyncio.create_task(poll_open_meteo_loop()))
-        logger.info("[Lifespan] Starting CycloneX automatic alert monitor...")
-        from alerts.monitor import alert_monitor_loop
-        tasks.append(asyncio.create_task(alert_monitor_loop()))
+    if enable_pollers and not is_serverless:
+        try:
+            logger.info("[Lifespan] Starting Open-Meteo live weather background poller...")
+            tasks.append(asyncio.create_task(poll_open_meteo_loop()))
+            logger.info("[Lifespan] Starting CycloneX automatic alert monitor...")
+            from alerts.monitor import alert_monitor_loop
+            tasks.append(asyncio.create_task(alert_monitor_loop()))
+        except Exception as exc:
+            logger.warning(f"[Lifespan] Could not initialize background worker: {exc}")
 
     yield
 

@@ -166,7 +166,7 @@ class OpenMeteoAdapter(BaseAdapter):
         self,
         lat: float,
         lon: float,
-        timeout_seconds: float = 4.0
+        timeout_seconds: float = 8.0
     ) -> Dict[str, Any]:
         """
         Retrieves real-time atmospheric observations for any latitude/longitude in India.
@@ -306,7 +306,7 @@ class OpenMeteoAdapter(BaseAdapter):
     async def fetch_grid(
         self,
         grid_points: Optional[List[Dict[str, Any]]] = None,
-        timeout_seconds: float = 6.0
+        timeout_seconds: float = 12.0
     ) -> Dict[str, Any]:
         """
         Fetches live weather for all India grid points in a SINGLE batched HTTP query
