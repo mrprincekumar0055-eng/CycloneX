@@ -39,11 +39,9 @@ export function getApiBaseUrl(): string {
 }
 
 export function isBackendConfigured(): boolean {
-  if (typeof window !== "undefined") {
-    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-    if (isLocalhost) return true;
-  }
-  return Boolean(process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL);
+  // In unified Vercel deployment, backend is deployed on the same domain at /api/v1.
+  // In local development, it connects to http://127.0.0.1:8000/api/v1.
+  return true;
 }
 
 export async function fetchFromAPI(endpoint: string, options: RequestInit = {}): Promise<any> {

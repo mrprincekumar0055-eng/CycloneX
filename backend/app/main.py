@@ -79,24 +79,27 @@ async def poll_open_meteo_loop():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Start background poller task and alert monitor
-    logger.info("[Lifespan] Starting Open-Meteo live weather background poller...")
-    polling_task = asyncio.create_task(poll_open_meteo_loop())
-
-    logger.info("[Lifespan] Starting CycloneX automatic alert monitor...")
-    from alerts.monitor import alert_monitor_loop
-    monitor_task = asyncio.create_task(alert_monitor_loop())
+    # Only spawn long-running persistent background workers if NOT running in an ephemeral serverless runtime (e.g. Vercel)
+    is_serverless = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+    tasks = []
+    if not is_serverless:
+        logger.info("[Lifespan] Starting Open-Meteo live weather background poller...")
+        tasks.append(asyncio.create_task(poll_open_meteo_loop()))
+        logger.info("[Lifespan] Starting CycloneX automatic alert monitor...")
+        from alerts.monitor import alert_monitor_loop
+        tasks.append(asyncio.create_task(alert_monitor_loop()))
 
     yield
 
     # Shutdown: Cleanly cancel background tasks
-    logger.info("[Lifespan] Shutting down background tasks...")
-    polling_task.cancel()
-    monitor_task.cancel()
-    try:
-        await asyncio.gather(polling_task, monitor_task, return_exceptions=True)
-    except Exception:
-        pass
+    if tasks:
+        logger.info("[Lifespan] Shutting down background tasks...")
+        for t in tasks:
+            t.cancel()
+        try:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        except Exception:
+            pass
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

@@ -12,18 +12,24 @@ const nextConfig = {
   },
   async rewrites() {
     const rawBackend = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
-    const cleanBackend = rawBackend
-      ? rawBackend.replace(/\/+$/, '').replace(/\/api\/v1$/, '')
-      : (process.env.NODE_ENV !== 'production' ? 'http://127.0.0.1:8000' : null);
+    let apiRewrites = [];
 
-    const apiRewrites = cleanBackend
-      ? [
-          {
-            source: '/api/v1/:path*',
-            destination: `${cleanBackend}/api/v1/:path*`,
-          },
-        ]
-      : [];
+    if (rawBackend && (rawBackend.startsWith('http://') || rawBackend.startsWith('https://'))) {
+      const cleanBackend = rawBackend.replace(/\/+$/, '').replace(/\/api\/v1$/, '');
+      apiRewrites = [
+        {
+          source: '/api/v1/:path*',
+          destination: `${cleanBackend}/api/v1/:path*`,
+        },
+      ];
+    } else if (process.env.NODE_ENV !== 'production') {
+      apiRewrites = [
+        {
+          source: '/api/v1/:path*',
+          destination: 'http://127.0.0.1:8000/api/v1/:path*',
+        },
+      ];
+    }
 
     return [
       ...apiRewrites,
