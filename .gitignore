@@ -40,6 +40,7 @@ cyclonex.db
 *.sqlite
 *.sqlite3
 *.db
+!backend/cyclonex.db
 *.log
 
 # IDE & Editor

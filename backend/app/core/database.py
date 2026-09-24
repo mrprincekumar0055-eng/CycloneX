@@ -10,22 +10,22 @@ connect_args = {}
 if db_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
     if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
-        try:
-            import shutil
-            tmp_db = "/tmp/cyclonex.db"
-            candidate_paths = [
-                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "cyclonex.db"),
-                os.path.join(os.getcwd(), "cyclonex.db"),
-                os.path.join(os.getcwd(), "backend", "cyclonex.db"),
-            ]
-            for cp in candidate_paths:
-                if os.path.exists(cp) and not os.path.exists(tmp_db):
+        import tempfile
+        import shutil
+        tmp_db = os.path.join(tempfile.gettempdir(), "cyclonex.db")
+        candidate_paths = [
+            os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "cyclonex.db"),
+            os.path.join(os.getcwd(), "cyclonex.db"),
+            os.path.join(os.getcwd(), "backend", "cyclonex.db"),
+        ]
+        for cp in candidate_paths:
+            if os.path.exists(cp) and not os.path.exists(tmp_db):
+                try:
                     shutil.copy2(cp, tmp_db)
-                    break
-            if os.path.exists(tmp_db):
-                db_url = f"sqlite:///{tmp_db}"
-        except Exception:
-            pass
+                except Exception:
+                    pass
+                break
+        db_url = f"sqlite:///{tmp_db.replace('\\', '/')}"
 
 engine = create_engine(
     db_url,
