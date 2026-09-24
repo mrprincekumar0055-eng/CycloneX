@@ -179,8 +179,16 @@ def root():
         "api_v1": settings.API_V1_STR
     }
 
-# Register API v1
+# Register API v1 (and alias under /v1 so both /api/v1 and stripped /v1 resolve)
 app.include_router(api_router, prefix=settings.API_V1_STR)
+if settings.API_V1_STR != "/v1":
+    app.include_router(api_router, prefix="/v1")
+
+for _hp in ["/api/health", "/api/v1/health"]:
+    app.add_api_route(_hp, health_check, methods=["GET"], include_in_schema=False)
+
+for _hp in ["/api/health/ready", "/api/v1/health/ready"]:
+    app.add_api_route(_hp, health_ready, methods=["GET"], include_in_schema=False)
 
 if __name__ == "__main__":
     import uvicorn

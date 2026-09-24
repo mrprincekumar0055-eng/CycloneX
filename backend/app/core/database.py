@@ -13,9 +13,15 @@ if db_url.startswith("sqlite"):
         try:
             import shutil
             tmp_db = "/tmp/cyclonex.db"
-            root_db = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "cyclonex.db")
-            if not os.path.exists(tmp_db) and os.path.exists(root_db):
-                shutil.copy2(root_db, tmp_db)
+            candidate_paths = [
+                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "cyclonex.db"),
+                os.path.join(os.getcwd(), "cyclonex.db"),
+                os.path.join(os.getcwd(), "backend", "cyclonex.db"),
+            ]
+            for cp in candidate_paths:
+                if os.path.exists(cp) and not os.path.exists(tmp_db):
+                    shutil.copy2(cp, tmp_db)
+                    break
             if os.path.exists(tmp_db):
                 db_url = f"sqlite:///{tmp_db}"
         except Exception:
@@ -57,6 +63,21 @@ def init_db():
                     if col_name not in existing_cols:
                         conn.exec_driver_sql(f"ALTER TABLE alerts ADD COLUMN {col_name} {col_type}")
                 conn.commit()
+        except Exception:
+            pass
+
+        try:
+            from backend.app.models.entities import Cyclone
+            _db = SessionLocal()
+            try:
+                if _db.query(Cyclone).count() == 0:
+                    try:
+                        from scripts.seed_demo_data import seed
+                        seed()
+                    except Exception:
+                        pass
+            finally:
+                _db.close()
         except Exception:
             pass
 

@@ -1,0 +1,107 @@
+[
+  {
+    "image_id": "img-biparjoy-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "BIPARJOY",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  },
+  {
+    "image_id": "img-amphan-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "AMPHAN",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  },
+  {
+    "image_id": "img-fani-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "FANI",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  },
+  {
+    "image_id": "img-hudhud-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "HUDHUD",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  },
+  {
+    "image_id": "img-phailin-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "PHAILIN",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  },
+  {
+    "image_id": "img-yaas-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "YAAS",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  },
+  {
+    "image_id": "img-nisarga-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "NISARGA",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  }
+]

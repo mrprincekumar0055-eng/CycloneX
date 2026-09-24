@@ -1,0 +1,29 @@
+{
+  "pipeline_status": "STORM_AWARE_SPLIT_INITIALIZED",
+  "dataset_directories": {
+    "raw": "D:\\sih\\data\\raw",
+    "processed": "D:\\sih\\data\\processed",
+    "labels": "D:\\sih\\data\\labels",
+    "splits": "D:\\sih\\data\\splits"
+  },
+  "storm_partitions": {
+    "train_storms": [
+      "BIPARJOY",
+      "AMPHAN",
+      "FANI",
+      "HUDHUD",
+      "PHAILIN",
+      "YAAS",
+      "NISARGA"
+    ],
+    "val_storms": [
+      "MICHAUNG",
+      "TAUKTAE"
+    ],
+    "test_storms": [
+      "MOCHA",
+      "REMAL"
+    ]
+  },
+  "leakage_safety_guarantee": "No satellite image from the same storm ID can cross between train, validation, or test partitions."
+}

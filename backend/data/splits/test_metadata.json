@@ -1,0 +1,32 @@
+[
+  {
+    "image_id": "img-mocha-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "MOCHA",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  },
+  {
+    "image_id": "img-remal-2023-01",
+    "source": "NASA GIBS / MODIS Terra Corrected Reflectance",
+    "timestamp": "2023-06-14T06:00:00Z",
+    "latitude": 21.65,
+    "longitude": 66.85,
+    "storm_id": "REMAL",
+    "label": 1,
+    "channels": [
+      "Visible_Red",
+      "Visible_Green",
+      "Visible_Blue"
+    ],
+    "resolution_meters": 250
+  }
+]
