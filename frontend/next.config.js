@@ -11,15 +11,16 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL
-      ? process.env.BACKEND_URL.replace(/\/+$/, '')
+    const rawBackend = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
+    const cleanBackend = rawBackend
+      ? rawBackend.replace(/\/+$/, '').replace(/\/api\/v1$/, '')
       : (process.env.NODE_ENV !== 'production' ? 'http://127.0.0.1:8000' : null);
 
-    const apiRewrites = backendUrl
+    const apiRewrites = cleanBackend
       ? [
           {
             source: '/api/v1/:path*',
-            destination: `${backendUrl}/api/v1/:path*`,
+            destination: `${cleanBackend}/api/v1/:path*`,
           },
         ]
       : [];
