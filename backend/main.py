@@ -2,6 +2,7 @@ import sys
 import os
 import types
 import traceback
+import json
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
@@ -22,10 +23,44 @@ if "backend" not in sys.modules:
     backend_pkg.__file__ = os.path.join(_current_dir, "__init__.py")
     sys.modules["backend"] = backend_pkg
 
+class SafeASGIWrapper:
+    def __init__(self, inner):
+        self.inner = inner
+
+    async def __call__(self, scope, receive, send):
+        # Handle lifespan startup and shutdown cleanly if driven by ASGI adapter
+        if scope.get("type") == "lifespan":
+            while True:
+                msg = await receive()
+                if msg.get("type") == "lifespan.startup":
+                    await send({"type": "lifespan.startup.complete"})
+                elif msg.get("type") == "lifespan.shutdown":
+                    await send({"type": "lifespan.shutdown.complete"})
+                    return
+                else:
+                    return
+
+        try:
+            await self.inner(scope, receive, send)
+        except Exception as exc:
+            tb = traceback.format_exc()
+            body = json.dumps({
+                "status": "error",
+                "code": "ASGI_EXCEPTION",
+                "message": str(exc),
+                "traceback": tb.splitlines()
+            }).encode("utf-8")
+            headers = [
+                (b"content-type", b"application/json"),
+                (b"content-length", str(len(body)).encode("ascii")),
+            ]
+            await send({"type": "http.response.start", "status": 500, "headers": headers})
+            await send({"type": "http.response.body", "body": body, "more_body": False})
+
 # Dynamically import real application and transparently report any cold-start exceptions
 try:
     from backend.app.main import app as _real_app
-    app = _real_app
+    app = SafeASGIWrapper(_real_app)
 except Exception as _startup_exc:
     _startup_trace = traceback.format_exc()
     import logging
@@ -39,7 +74,7 @@ except Exception as _startup_exc:
                 "status": "error",
                 "code": "STARTUP_IMPORT_FAILED",
                 "message": str(_startup_exc),
-                "traceback": _startup_trace
+                "traceback": _startup_trace.splitlines()
             }
         )
 
