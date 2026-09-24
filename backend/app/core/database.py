@@ -3,13 +3,26 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from backend.app.core.config import settings
 import os
 
-# Connect args for SQLite support
+# Resolve database URL (support serverless writable /tmp directory if running on Vercel/Lambda)
+db_url = settings.DATABASE_URL
 connect_args = {}
-if settings.DATABASE_URL.startswith("sqlite"):
+
+if db_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        try:
+            import shutil
+            tmp_db = "/tmp/cyclonex.db"
+            root_db = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "cyclonex.db")
+            if not os.path.exists(tmp_db) and os.path.exists(root_db):
+                shutil.copy2(root_db, tmp_db)
+            if os.path.exists(tmp_db):
+                db_url = f"sqlite:///{tmp_db}"
+        except Exception:
+            pass
 
 engine = create_engine(
-    settings.DATABASE_URL,
+    db_url,
     connect_args=connect_args,
     pool_pre_ping=True,
     echo=False
